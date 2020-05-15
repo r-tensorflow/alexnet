@@ -4,9 +4,14 @@ alexnet_install <- function() {
   reticulate::py_install("pillow")
 }
 
+#' AlexNet Model
+#'
+#' Make use of AlexNet \link{https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf}
+#' to train an image classifier.
+#'
 #' @import keras
 #' @export
-alexnet_train <- function(batch_size = 32,
+alexnet_train <- function(batch_size = 128,
                           epochs = 1) {
 
   tiny_imagenet <- pins::pin("http://cs231n.stanford.edu/tiny-imagenet-200.zip")
@@ -52,7 +57,7 @@ alexnet_train <- function(batch_size = 32,
 
   model %>% compile(
     loss = "categorical_crossentropy",
-    optimizer = "adam",
+    optimizer = optimizer_sgd(momentum = 0.9, decay = 0.0005),
     metrics = "accuracy"
   )
 
