@@ -1,4 +1,10 @@
+#' @export
+alexnet_install <- function() {
+  reticulate::py_install("scipy")
+  reticulate::py_install("pillow")
+}
 
+#' @import keras
 #' @export
 alexnet_train <- function(batch_size = 32,
                           epochs = 1) {
@@ -41,7 +47,7 @@ alexnet_train <- function(batch_size = 32,
     layer_activation("relu") %>%
     layer_dropout(0.4) %>%
 
-    layer_dense(17) %>%
+    layer_dense(200) %>%
     layer_activation("softmax")
 
   model %>% compile(
@@ -54,15 +60,12 @@ alexnet_train <- function(batch_size = 32,
     width_shift_range = 0.2,
     height_shift_range = 0.2,
     horizontal_flip = TRUE,
-    zca_whitening = TRUEs
+    zca_whitening = TRUE
   )
 
-  datagen %>% fit_image_data_generator(x_train)
-
   model %>% fit_generator(
-    flow_images_from_directory(directory = tiny_imagenet_train, batch_size = batch_size, generator = datagen),
-    steps_per_epoch = as.integer(50000/batch_size),
-    epochs = epochs,
-    validation_data = list(x_test, y_test)
+    flow_images_from_directory(directory = tiny_imagenet_train, batch_size = batch_size, generator = datagen, target_size = c(224, 224)),
+    steps_per_epoch = as.integer(50000 / batch_size),
+    epochs = epochs
   )
 }
