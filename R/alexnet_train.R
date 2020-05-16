@@ -70,7 +70,7 @@ alexnet_train <- function(batch_size = 128,
 
   model %>% fit_generator(
     flow_images_from_directory(directory = tiny_imagenet_train, batch_size = batch_size, generator = datagen, target_size = c(224, 224)),
-    steps_per_epoch = as.integer(50000 / batch_size),
+    steps_per_epoch = as.integer(length(dir(tiny_imagenet_train, recursive = TRUE)) / batch_size),
     epochs = epochs
   )
 }
