@@ -20,38 +20,34 @@ alexnet_train <- function(batch_size = 128,
   model <- keras_model_sequential()
 
   model %>%
-
-    layer_conv_2d(filters = 96, kernel_size = c(11, 11), strides = c(4, 4), padding = "valid", input_shape = c(224, 224, 3)) %>%
+    layer_conv_2d(filters = 96, kernel_size = c(11, 11),
+                  strides = c(4, 4), input_shape = c(224, 224, 3), padding = "valid") %>%
     layer_activation("relu") %>%
     layer_max_pooling_2d(pool_size = c(2, 2), strides = c(2, 2), padding = "valid") %>%
-
-    layer_conv_2d(filters = 256, kernel_size = c(11, 11), strides = c(1, 1), padding = "valid") %>%
+    
+    layer_conv_2d(filters = 256, kernel_size = c(5, 5), strides = c(1, 1), padding = "valid") %>%
     layer_activation("relu") %>%
     layer_max_pooling_2d(pool_size = c(2, 2), strides = c(2, 2), padding = "valid") %>%
-
+    
     layer_conv_2d(filters = 384, kernel_size = c(3, 3), strides = c(1, 1), padding = "valid") %>%
     layer_activation("relu") %>%
-
+    
     layer_conv_2d(filters = 384, kernel_size = c(3, 3), strides = c(1, 1), padding = "valid") %>%
     layer_activation("relu") %>%
-
+    
     layer_conv_2d(filters = 256, kernel_size = c(3, 3), strides = c(1, 1), padding = "valid") %>%
     layer_activation("relu") %>%
     layer_max_pooling_2d(pool_size = c(2, 2), strides = c(2, 2), padding = "valid") %>%
-
+    
     layer_flatten() %>%
-    layer_dense(4096, input_shape = c(224*224*3, NA)) %>%
-    layer_activation("relu") %>%
-    layer_dropout(0.4) %>%
-
     layer_dense(4096) %>%
     layer_activation("relu") %>%
-    layer_dropout(0.4) %>%
-
-    layer_dense(1000) %>%
+    layer_dropout(rate = 0.5) %>%
+    
+    layer_dense(4096) %>%
     layer_activation("relu") %>%
-    layer_dropout(0.4) %>%
-
+    layer_dropout(rate = 0.5) %>%
+     
     layer_dense(200) %>%
     layer_activation("softmax")
 
@@ -69,8 +65,10 @@ alexnet_train <- function(batch_size = 128,
   )
 
   model %>% fit_generator(
-    flow_images_from_directory(directory = tiny_imagenet_train, batch_size = batch_size, generator = datagen, target_size = c(224, 224)),
-    steps_per_epoch = as.integer(length(dir(tiny_imagenet_train, recursive = TRUE)) / batch_size),
-    epochs = epochs
+    flow_images_from_directory(directory = tiny_imagenet_train,
+                               batch_size = 128,
+                               generator = datagen,
+                               target_size = c(224, 224)),
+    steps_per_epoch = as.integer(100200 / 128)
   )
 }
