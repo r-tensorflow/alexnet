@@ -60,7 +60,7 @@ alexnet_train <- function(batch_size = 128,
     layer_activation("relu") %>%
     layer_dropout(rate = 0.5) %>%
 
-    layer_dense(length(unique(tiny_imagenet_data$cat))) %>%
+    layer_dense(length(tiny_imagenet_map)) %>%
     layer_activation("softmax")
 
   model %>% compile(
