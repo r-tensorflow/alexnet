@@ -17,7 +17,7 @@ alexnet_train <- function(batch_size = 128,
   tiny_imagenet <- pins::pin("http://cs231n.stanford.edu/tiny-imagenet-200.zip")
   tiny_imagenet_train <- gsub("/test.*", "/train", tiny_imagenet[[1]])
 
-  tiny_imagenet_subset <- dir(tiny_imagenet_train, recursive = TRUE, pattern = "*.JPEG", full.names = TRUE)[1:1000]
+  tiny_imagenet_subset <- dir(tiny_imagenet_train, recursive = TRUE, pattern = "*.JPEG", full.names = TRUE)
   tiny_imagenet_categories <- gsub("^.*/train/|/images.*$", "", tiny_imagenet_subset)
 
   tiny_imagenet_map <- 0:(length(unique(tiny_imagenet_categories))-1)
@@ -82,7 +82,7 @@ alexnet_train <- function(batch_size = 128,
     dataset <- data %>%
       tensor_slices_dataset() %>%
       dataset_map(~.x %>% purrr::list_modify(
-        img = tf$image$decode_jpeg(tf$io$read_file(.x$img))
+        img = tf$image$decode_jpeg(tf$io$read_file(.x$img), channels = 3)
       )) %>%
       dataset_map(~.x %>% purrr::list_modify(
         img = tf$image$convert_image_dtype(.x$img, dtype = tf$float32)
