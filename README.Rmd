@@ -1,0 +1,27 @@
+---
+title: "alexnet: R Port for AlexNet Model"
+output:
+  github_document:
+    fig_width: 9
+    fig_height: 5
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+## Training
+
+We recommend using the [mlverse/docker](https://github.com/mlverse/docker) image which you can retrieve and run as follows:
+
+```{bash}
+docker pull mlverse/mlverse-base:version-0.2.0
+docker run --gpus all -p 8787:8787 -d mlverse/mlverse-base:version-0.2.0
+```
+
+You can then connect to RStudio Server under port https://public-address:8787, followed by installing and runninng AlexNet:
+
+```{r}
+remotes::install_github("mlverse/alexnet")
+
+alexnet_train::alexnet_train()
+```
