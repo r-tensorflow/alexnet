@@ -1,9 +1,3 @@
-#' @export
-alexnet_install <- function() {
-  reticulate::py_install("scipy")
-  reticulate::py_install("pillow")
-}
-
 #' AlexNet Model
 #'
 #' Make use of AlexNet \link{https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf}
@@ -12,7 +6,7 @@ alexnet_install <- function() {
 #' @import keras
 #' @import tfdatasets
 #' @export
-alexnet_train <- function(batch_size = 128,
+alexnet_train <- function(batch_size = 32L,
                           epochs = 2) {
   tiny_imagenet <- pins::pin("http://cs231n.stanford.edu/tiny-imagenet-200.zip")
   tiny_imagenet_train <- gsub("/test.*", "/train", tiny_imagenet[[1]])
@@ -106,6 +100,6 @@ alexnet_train <- function(batch_size = 128,
   }
 
   model %>% fit(
-    create_dataset(tiny_imagenet_data, TRUE),
+    create_dataset(tiny_imagenet_data, TRUE, batch_size = batch_size),
     epochs = epochs)
 }
