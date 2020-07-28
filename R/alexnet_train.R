@@ -1,28 +1,4 @@
-#' AlexNet Model
-#'
-#' Make use of AlexNet \link{https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf}
-#' to train an image classifier.
-#'
-#' @import keras
-#' @import tfdatasets
-#' @export
-alexnet_train <- function(batch_size = 32L,
-                          epochs = 2) {
-  tiny_imagenet <- pins::pin("http://cs231n.stanford.edu/tiny-imagenet-200.zip")
-  tiny_imagenet_train <- gsub("/test.*", "/train", tiny_imagenet[[1]])
-
-  tiny_imagenet_subset <- dir(tiny_imagenet_train, recursive = TRUE, pattern = "*.JPEG", full.names = TRUE)
-  tiny_imagenet_categories <- gsub("^.*/train/|/images.*$", "", tiny_imagenet_subset)
-
-  tiny_imagenet_map <- 0:(length(unique(tiny_imagenet_categories))-1)
-  names(tiny_imagenet_map) <- unique(tiny_imagenet_categories)
-  tiny_imagenet_y <- unname(sapply(tiny_imagenet_categories, function(e) tiny_imagenet_map[e]))
-
-  tiny_imagenet_data <- tibble::tibble(
-    img = tiny_imagenet_subset,
-    cat = to_categorical(tiny_imagenet_y, length(unique(tiny_imagenet_y)))
-  )
-
+alexnet_model <- function() {
   model <- keras_model_sequential()
 
   model %>%
@@ -56,12 +32,55 @@ alexnet_train <- function(batch_size = 32L,
 
     layer_dense(length(tiny_imagenet_map)) %>%
     layer_activation("softmax")
+}
 
+alexnet_compile <- function(model) {
   model %>% compile(
     loss = "categorical_crossentropy",
     optimizer = optimizer_sgd(momentum = 0.9, decay = 0.0005),
     metrics = "accuracy"
   )
+}
+
+alexnet_tinyimagenet <- function() {
+  tiny_imagenet <- pins::pin("http://cs231n.stanford.edu/tiny-imagenet-200.zip")
+  tiny_imagenet_train <- gsub("/test.*", "/train", tiny_imagenet[[1]])
+
+  tiny_imagenet_subset <- dir(tiny_imagenet_train, recursive = TRUE, pattern = "*.JPEG", full.names = TRUE)
+  tiny_imagenet_categories <- gsub("^.*/train/|/images.*$", "", tiny_imagenet_subset)
+
+  list(
+    image = tiny_imagenet_subset,
+    category = tiny_imagenet_categories
+  )
+}
+
+#' AlexNet Model
+#'
+#' Make use of AlexNet \link{https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf}
+#' to train an image classifier.
+#'
+#' @import keras
+#' @import tfdatasets
+#' @export
+alexnet_train <- function(batch_size = 32L,
+                          epochs = 2,
+                          data = NULL) {
+  if (is.null(data)) {
+    data <- alexnet_tinyimagenet()
+  }
+
+  data_map <- 0:(length(unique(data$category))-1)
+  names(data_map) <- unique(data$category)
+  data_y <- unname(sapply(data$category, function(e) data_map[e]))
+
+  tiny_imagenet_data <- tibble::tibble(
+    img = data$image,
+    cat = to_categorical(data_y, length(unique(data_y)))
+  )
+
+  model <- alexnet_model()
+  alexnet_compile(model)
 
   random_bsh <- function(img) {
     img %>%
