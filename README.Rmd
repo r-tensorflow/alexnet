@@ -21,7 +21,7 @@ docker run --gpus all -p 8787:8787 -d mlverse/mlverse-base:version-0.2.0
 You can then connect to RStudio Server under port https://public-address:8787, followed by installing and runninng AlexNet:
 
 ```{r}
-remotes::install_github("mlverse/alexnet")
+remotes::install_github("r-tensorflow/alexnet")
 
 alexnet_train::alexnet_train()
 ```

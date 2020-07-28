@@ -17,7 +17,7 @@ You can then connect to RStudio Server under port
 AlexNet:
 
 ``` r
-remotes::install_github("mlverse/alexnet")
+remotes::install_github("r-tensorflow/alexnet")
 
 alexnet_train::alexnet_train()
 ```
