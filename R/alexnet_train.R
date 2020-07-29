@@ -68,7 +68,8 @@ alexnet_tinyimagenet <- function() {
 #' @export
 alexnet_train <- function(batch_size = 32L,
                           epochs = 2,
-                          data = NULL) {
+                          data = NULL,
+                          strategy = NULL) {
   if (is.null(data)) {
     data <- alexnet_tinyimagenet()
   }
@@ -82,8 +83,16 @@ alexnet_train <- function(batch_size = 32L,
     cat = to_categorical(data_y, length(data$categories))
   )
 
-  model <- alexnet_model(output = length(data_map))
-  alexnet_compile(model)
+  if (identical(strategy, NULL)) {
+    model <- alexnet_model(output = length(data_map))
+    alexnet_compile(model)
+  }
+  else {
+    with (strategy$scope(), {
+      model <- alexnet_model(output = length(data_map))
+      alexnet_compile(model)
+    })
+  }
 
   random_bsh <- function(img) {
     img %>%
