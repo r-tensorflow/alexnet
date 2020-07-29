@@ -1,4 +1,4 @@
-alexnet_model <- function() {
+alexnet_model <- function(output) {
   model <- keras_model_sequential()
 
   model %>%
@@ -30,7 +30,7 @@ alexnet_model <- function() {
     layer_activation("relu") %>%
     layer_dropout(rate = 0.5) %>%
 
-    layer_dense(length(tiny_imagenet_map)) %>%
+    layer_dense(output) %>%
     layer_activation("softmax")
 }
 
@@ -79,7 +79,7 @@ alexnet_train <- function(batch_size = 32L,
     cat = to_categorical(data_y, length(unique(data_y)))
   )
 
-  model <- alexnet_model()
+  model <- alexnet_model(output = length(data_map))
   alexnet_compile(model)
 
   random_bsh <- function(img) {
