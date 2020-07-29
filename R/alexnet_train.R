@@ -49,9 +49,12 @@ alexnet_tinyimagenet <- function() {
   tiny_imagenet_subset <- dir(tiny_imagenet_train, recursive = TRUE, pattern = "*.JPEG", full.names = TRUE)
   tiny_imagenet_categories <- gsub("^.*/train/|/images.*$", "", tiny_imagenet_subset)
 
+  category <- as.character(tiny_imagenet_categories)
+
   list(
     image = tiny_imagenet_subset,
-    category = tiny_imagenet_categories
+    category = category,
+    categories = unique(category)
   )
 }
 
@@ -70,13 +73,13 @@ alexnet_train <- function(batch_size = 32L,
     data <- alexnet_tinyimagenet()
   }
 
-  data_map <- 0:(length(unique(data$category))-1)
-  names(data_map) <- unique(data$category)
+  data_map <- 0:(length(data$categories)-1)
+  names(data_map) <- data$categories
   data_y <- unname(sapply(data$category, function(e) data_map[e]))
 
   tiny_imagenet_data <- tibble::tibble(
     img = data$image,
-    cat = to_categorical(data_y, length(unique(data_y)))
+    cat = to_categorical(data_y, length(data$categories))
   )
 
   model <- alexnet_model(output = length(data_map))
