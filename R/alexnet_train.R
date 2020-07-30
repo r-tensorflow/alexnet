@@ -69,7 +69,8 @@ alexnet_tinyimagenet <- function() {
 alexnet_train <- function(batch_size = 32L,
                           epochs = 2,
                           data = NULL,
-                          strategy = NULL) {
+                          strategy = NULL,
+                          parallel = NULL) {
   if (is.null(data)) {
     data <- alexnet_tinyimagenet()
   }
@@ -119,7 +120,7 @@ alexnet_train <- function(batch_size = 32L,
     if (train) {
       dataset <- dataset_map(dataset, ~.x %>% purrr::list_modify(
         img = random_bsh(.x$img)
-      ))
+      ), num_parallel_calls = parallel)
     }
 
     if (train) {
