@@ -18,4 +18,5 @@ Imports:
   keras,
   pins,
   purrr,
-  reticulate
+  reticulate,
+  callr

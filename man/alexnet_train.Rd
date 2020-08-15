@@ -4,7 +4,13 @@
 \alias{alexnet_train}
 \title{AlexNet Model}
 \usage{
-alexnet_train(batch_size = 32L, epochs = 2, data = NULL)
+alexnet_train(
+  batch_size = 32L,
+  epochs = 2,
+  data = NULL,
+  strategy = NULL,
+  parallel = NULL
+)
 }
 \description{
 Make use of AlexNet \link{https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf}
